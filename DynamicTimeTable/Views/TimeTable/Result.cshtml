@@ -1,0 +1,48 @@
+﻿@{
+    var table = (List<List<string>>)ViewBag.Table;
+    int cols = (int)ViewBag.Cols;
+    int rows = (int)ViewBag.Rows;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Generated Timetable</title>
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Generated Timetable</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped text-center align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                @for (int day = 1; day <= cols; day++)
+                                {
+                                    <th scope="col">Day @day</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int row = 0; row < rows; row++)
+                            {
+                                <tr>
+                                    @for (int col = 0; col < cols; col++)
+                                    {
+                                        <td>@table[row][col]</td> 
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="/TimeTable/Index" class="btn btn-secondary">Create New Timetable</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

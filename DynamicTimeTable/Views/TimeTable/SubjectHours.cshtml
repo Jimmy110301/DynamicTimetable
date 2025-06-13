@@ -1,0 +1,110 @@
+﻿@{
+    int totalSubjects = (int)ViewBag.TotalSubjects;
+    int totalHours = (int)ViewBag.TotalHours;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enter Subject Hours</title>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Assign Weekly Hours to Subjects</h4>
+            </div>
+            <div class="card-body">
+                <form id="subjectForm" asp-action="GenerateTimetable" method="post">
+                    @for (int i = 0; i < totalSubjects; i++)
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Subject Name:</label>
+                                <input name="[@i].SubjectName" class="form-control subject-name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Weekly Hours:</label>
+                                <input name="[@i].WeeklyHours" type="number" min="1" class="form-control weekly-hours" />
+                            </div>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <p class="text-muted">
+                            Ensure total weekly subject hours =
+                            <strong id="expectedHours">@totalHours</strong>
+                        </p>
+                        <div class="text-info">Submit button will be enabled only when all fields are valid and total hours match.</div>
+                        <div id="errorMsg" class="alert alert-danger d-none">
+                            Total Weekly Hours must equal @totalHours.
+                        </div>
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger">@ViewBag.Error</div>
+                        }
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn btn-success w-25 float-end" disabled>
+                        Generate Timetable
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const totalExpected = @totalHours;
+
+            function validateForm() {
+                let isValid = true;
+                let total = 0;
+
+                $(".subject-name").each(function () {
+                    const value = $(this).val().trim();
+                    if (!value) {
+                        $(this).addClass("is-invalid");
+                        isValid = false;
+                    } else {
+                        $(this).removeClass("is-invalid");
+                    }
+                });
+
+                $(".weekly-hours").each(function () {
+                    const val = parseInt($(this).val()) || 0;
+                    if (val < 1) {
+                        $(this).addClass("is-invalid");
+                        isValid = false;
+                    } else {
+                        $(this).removeClass("is-invalid");
+                    }
+                    total += val;
+                });
+
+                if (total !== totalExpected) {
+                    $("#errorMsg").removeClass("d-none");
+                    isValid = false;
+                } else {
+                    $("#errorMsg").addClass("d-none");
+                }
+
+                $("#submitBtn").prop("disabled", !isValid);
+                return isValid;
+            }
+
+            $(".subject-name, .weekly-hours").on("input", validateForm);
+
+            $("#subjectForm").on("submit", function (e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                }
+            });
+
+            validateForm(); // Initial check
+        });
+    </script>
+</body>
+</html>

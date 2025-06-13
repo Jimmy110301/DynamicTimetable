@@ -1,0 +1,106 @@
+﻿@model TimetableInputModel
+@{
+    ViewData["Title"] = "Timetable Input";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Enter Timetable Parameters</h4>
+            </div>
+            <div class="card-body">
+                <form id="timetableForm" asp-action="SubmitInput" method="post" novalidate>
+                    <div class="mb-3">
+                        <label asp-for="WorkingDays" class="form-label"></label>
+                        <input asp-for="WorkingDays" type="number" class="form-control" />
+                        <span asp-validation-for="WorkingDays" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SubjectsPerDay" class="form-label"></label>
+                        <input asp-for="SubjectsPerDay" type="number" class="form-control" />
+                        <span asp-validation-for="SubjectsPerDay" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TotalSubjects" class="form-label"></label>
+                        <input asp-for="TotalSubjects" type="number" class="form-control" />
+                        <span asp-validation-for="TotalSubjects" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Total Hours</label>
+                        <input id="totalHours" type="text" class="form-control" readonly value="0" />
+                        <div class="form-text">Calculated automatically: Working Days × Subjects Per Day.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary float-end">Next</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateTotalHours() {
+                const days = parseInt($("#WorkingDays").val()) || 0;
+                const perDay = parseInt($("#SubjectsPerDay").val()) || 0;
+                $("#totalHours").val(days * perDay);
+            }
+
+            $("#WorkingDays, #SubjectsPerDay").on("input", updateTotalHours);
+
+            $("#timetableForm").validate({
+                rules: {
+                    WorkingDays: {
+                        required: true,
+                        number: true,
+                        min: 1,
+                        max: 7
+                    },
+                    SubjectsPerDay: {
+                        required: true,
+                        number: true,
+                        min: 1,
+                        max: 8
+                    },
+                    TotalSubjects: {
+                        required: true,
+                        number: true,
+                        min: 1
+                    }
+                },
+                messages: {
+                    WorkingDays: {
+                        required: "Please enter working days.",
+                        min: "Minimum is 1.",
+                        max: "Maximum is 7."
+                    },
+                    SubjectsPerDay: {
+                        required: "Please enter subjects per day.",
+                        min: "Minimum is 1.",
+                        max: "Maximum is 8."
+                    },
+                    TotalSubjects: {
+                        required: "Please enter total subjects.",
+                        min: "Minimum is 1."
+                    }
+                },
+                errorClass: "text-danger",
+                errorElement: "div",
+                highlight: function (element) {
+                    $(element).addClass("is-invalid");
+                },
+                unhighlight: function (element) {
+                    $(element).removeClass("is-invalid");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
